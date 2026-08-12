@@ -1,0 +1,54 @@
+{
+  "data": [
+    {
+      "patientId": "200104",
+      "name": "Williams, Sarah",
+      "dob": "09/28/1987",
+      "gender": "F",
+      "ssn": "678-90-1234",
+      "phone": "931-555-0144",
+      "email": "swilliams.sam@example.com",
+      "address": {
+        "line1": "14 Maple Court",
+        "city": "Clarksville",
+        "state": "TN",
+        "zip": "37040"
+      }
+    },
+    {
+      "patientId": "550001",
+      "name": "Patel, Ravi",
+      "dob": "04/17/1968",
+      "gender": "M",
+      "ssn": "890-12-3456",
+      "phone": "931-555-0177",
+      "email": "rpatel@example.com",
+      "address": {
+        "line1": "402 College St",
+        "city": "Clarksville",
+        "state": "TN",
+        "zip": "37044"
+      }
+    },
+    {
+      "patientId": "550002",
+      "name": "Ortiz, Diego",
+      "dob": "02/11/1995",
+      "gender": "M",
+      "ssn": "012-34-5678",
+      "phone": "931-555-0166",
+      "email": "dortiz@example.com",
+      "address": {
+        "line1": "88 Providence Blvd",
+        "city": "Clarksville",
+        "state": "TN",
+        "zip": "37042"
+      }
+    }
+  ],
+  "meta": {
+    "total": 12,
+    "page": 1,
+    "nextPage": 2
+  }
+}

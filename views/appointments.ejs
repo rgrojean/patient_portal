@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>MyRiverbend — Appointments</title>
+  <link rel="stylesheet" href="/css/portal.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+  <%- include('partials/nav') %>
+  <div class="wrap">
+    <h1>Upcoming Appointments</h1>
+    <ul>
+      <% appointments.forEach(function (a) { %>
+        <li><%= a.when %> — <%= a.clinic %> (<%= a.provider %>)</li>
+      <% }); %>
+    </ul>
+    <p><a class="btn" href="/request-visit">Request a visit</a></p>
+  </div>
+  <script src="/js/portal.js"></script>
+</body>
+</html>

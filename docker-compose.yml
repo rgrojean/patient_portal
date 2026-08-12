@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: portal
+      POSTGRES_PASSWORD: portal
+      POSTGRES_DB: patient_portal
+    ports:
+      - "15432:5432"
+    volumes:
+      - portal_pg:/var/lib/postgresql/data
+
+volumes:
+  portal_pg:

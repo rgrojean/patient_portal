@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>MyRiverbend Admin — Patient</title>
+  <link rel="stylesheet" href="/css/portal.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="/admin">Patient Lookup</a>
+    <a href="/logout">Sign out</a>
+  </nav>
+  <div class="wrap">
+    <h1>Patient Detail</h1>
+    <table class="detail">
+      <%
+        var labels = { dob: 'Date of Birth', ssn: 'SSN', addr_line1: 'Address Line 1', patient_id: 'Patient ID', updated_at: 'Updated At' };
+        function pretty(key) {
+          if (labels[key]) return labels[key];
+          return key.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+        }
+        if (patient) {
+          Object.keys(patient).forEach(function (key) {
+      %>
+      <tr>
+        <th><%= pretty(key) %></th>
+        <td><%= patient[key] %></td>
+      </tr>
+      <%
+          });
+        }
+      %>
+    </table>
+  </div>
+  <script src="/js/portal.js"></script>
+</body>
+</html>
