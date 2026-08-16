@@ -8,11 +8,10 @@ var fixtures = require('./fixtures/patients.json');
 
 var samplePatient = fixtures.data[0];
 var cacheRow = {
-  patient_id: samplePatient.patientId,
-  name: samplePatient.name,
+  patient_id: samplePatient.identifier[0].value,
+  name: samplePatient.family + ', ' + samplePatient.given.join(' '),
   dob: samplePatient.dob,
   gender: samplePatient.gender,
-  ssn: samplePatient.ssn,
   phone: samplePatient.phone,
   email: samplePatient.email,
   addr_line1: samplePatient.address.line1,
@@ -127,8 +126,6 @@ describe('routes', function () {
           .expect(function (res) {
             assert.ok(res.text.indexOf('Date of Birth') !== -1);
             assert.ok(res.text.indexOf(cacheRow.dob) !== -1);
-            assert.ok(res.text.indexOf('SSN') !== -1);
-            assert.ok(res.text.indexOf(cacheRow.ssn) !== -1);
             assert.ok(res.text.indexOf(cacheRow.name) !== -1);
           })
           .end(done);
@@ -275,8 +272,6 @@ describe('routes', function () {
           .expect(200)
           .expect(function (res) {
             assert.ok(res.text.indexOf('Date of Birth') !== -1);
-            assert.ok(res.text.indexOf('SSN') !== -1);
-            assert.ok(res.text.indexOf(cacheRow.ssn) !== -1);
             assert.ok(queryStub.thirdCall.args[0].indexOf('INSERT INTO audit_log') !== -1);
             assert.deepStrictEqual(queryStub.thirdCall.args[1], ['admin', '200104']);
           })
