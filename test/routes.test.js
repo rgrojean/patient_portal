@@ -7,12 +7,26 @@ var appFactory = require('../app');
 var fixtures = require('./fixtures/patients.json');
 
 var samplePatient = fixtures.data[0];
+
+function riverbendMrn(patient) {
+  var i;
+  for (i = 0; i < patient.identifier.length; i++) {
+    if (patient.identifier[i].system === 'urn:riverbend:mrn') {
+      return patient.identifier[i].value;
+    }
+  }
+  return null;
+}
+
+function composedName(patient) {
+  return patient.family + ', ' + patient.given.join(' ');
+}
+
 var cacheRow = {
-  patient_id: samplePatient.patientId,
-  name: samplePatient.name,
+  patient_id: riverbendMrn(samplePatient),
+  name: composedName(samplePatient),
   dob: samplePatient.dob,
   gender: samplePatient.gender,
-  ssn: samplePatient.ssn,
   phone: samplePatient.phone,
   email: samplePatient.email,
   addr_line1: samplePatient.address.line1,
@@ -127,9 +141,9 @@ describe('routes', function () {
           .expect(function (res) {
             assert.ok(res.text.indexOf('Date of Birth') !== -1);
             assert.ok(res.text.indexOf(cacheRow.dob) !== -1);
-            assert.ok(res.text.indexOf('SSN') !== -1);
-            assert.ok(res.text.indexOf(cacheRow.ssn) !== -1);
+            assert.ok(res.text.indexOf('SSN') === -1);
             assert.ok(res.text.indexOf(cacheRow.name) !== -1);
+            assert.ok(res.text.indexOf(cacheRow.patient_id) !== -1);
           })
           .end(done);
       });
@@ -275,8 +289,8 @@ describe('routes', function () {
           .expect(200)
           .expect(function (res) {
             assert.ok(res.text.indexOf('Date of Birth') !== -1);
-            assert.ok(res.text.indexOf('SSN') !== -1);
-            assert.ok(res.text.indexOf(cacheRow.ssn) !== -1);
+            assert.ok(res.text.indexOf('SSN') === -1);
+            assert.ok(res.text.indexOf(cacheRow.name) !== -1);
             assert.ok(queryStub.thirdCall.args[0].indexOf('INSERT INTO audit_log') !== -1);
             assert.deepStrictEqual(queryStub.thirdCall.args[1], ['admin', '200104']);
           })
