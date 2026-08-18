@@ -1,11 +1,13 @@
 {
   "data": [
     {
-      "patientId": "200104",
-      "name": "Williams, Sarah",
+      "identifier": [
+        { "system": "urn:riverbend:mrn", "value": "200104" }
+      ],
+      "given": ["Sarah"],
+      "family": "Williams",
       "dob": "09/28/1987",
       "gender": "F",
-      "ssn": "678-90-1234",
       "phone": "931-555-0144",
       "email": "swilliams.sam@example.com",
       "address": {
@@ -16,11 +18,13 @@
       }
     },
     {
-      "patientId": "550001",
-      "name": "Patel, Ravi",
+      "identifier": [
+        { "system": "urn:stansgar:mrn", "value": "550001" }
+      ],
+      "given": ["Ravi"],
+      "family": "Patel",
       "dob": "04/17/1968",
       "gender": "M",
-      "ssn": "890-12-3456",
       "phone": "931-555-0177",
       "email": "rpatel@example.com",
       "address": {
@@ -31,11 +35,13 @@
       }
     },
     {
-      "patientId": "550002",
-      "name": "Ortiz, Diego",
+      "identifier": [
+        { "system": "urn:riverbend:mrn", "value": "550002" }
+      ],
+      "given": ["Diego"],
+      "family": "Ortiz",
       "dob": "02/11/1995",
       "gender": "M",
-      "ssn": "012-34-5678",
       "phone": "931-555-0166",
       "email": "dortiz@example.com",
       "address": {

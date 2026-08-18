@@ -23,7 +23,7 @@ router.get('/search', function (req, res) {
   var params = [];
   if (name) {
     params.push('%' + name + '%');
-    sql += ' AND name ILIKE $' + params.length;
+    sql += ' AND (name ILIKE $' + params.length + ' OR family ILIKE $' + params.length + ')';
   }
   if (dob) {
     params.push(dob);
