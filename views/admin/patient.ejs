@@ -15,7 +15,7 @@
     <h1>Patient Detail</h1>
     <table class="detail">
       <%
-        var labels = { dob: 'Date of Birth', ssn: 'SSN', addr_line1: 'Address Line 1', patient_id: 'Patient ID', updated_at: 'Updated At' };
+        var labels = { dob: 'Date of Birth', given: 'Given', family: 'Family', addr_line1: 'Address Line 1', patient_id: 'Patient ID', updated_at: 'Updated At' };
         function pretty(key) {
           if (labels[key]) return labels[key];
           return key.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });

@@ -23,7 +23,8 @@ router.get('/search', function (req, res) {
   var params = [];
   if (name) {
     params.push('%' + name + '%');
-    sql += ' AND name ILIKE $' + params.length;
+    sql += ' AND (family ILIKE $' + params.length +
+      ' OR EXISTS (SELECT 1 FROM unnest(COALESCE(given, ARRAY[]::TEXT[])) AS g WHERE g ILIKE $' + params.length + '))';
   }
   if (dob) {
     params.push(dob);

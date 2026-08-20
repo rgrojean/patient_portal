@@ -24,7 +24,7 @@
         <% results.forEach(function (r) { %>
           <tr>
             <td><%= r.patient_id %></td>
-            <td><%= r.name %></td>
+            <td><%= r.family + ', ' + (r.given || []).join(' ') %></td>
             <td><%= r.dob %></td>
             <td><a href="/admin/patients/<%= r.patient_id %>">View</a></td>
           </tr>
