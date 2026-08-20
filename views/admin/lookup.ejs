@@ -21,10 +21,18 @@
     <% if (results) { %>
       <table class="detail">
         <tr><th>Patient ID</th><th>Name</th><th>DOB</th><th></th></tr>
-        <% results.forEach(function (r) { %>
+        <%
+          function displayName(r) {
+            if (r.name) return r.name;
+            var given = Array.isArray(r.given) ? r.given.join(' ') : (r.given || '');
+            if (r.family) return r.family + (given ? ', ' + given : '');
+            return given;
+          }
+          results.forEach(function (r) {
+        %>
           <tr>
             <td><%= r.patient_id %></td>
-            <td><%= r.name %></td>
+            <td><%= displayName(r) %></td>
             <td><%= r.dob %></td>
             <td><a href="/admin/patients/<%= r.patient_id %>">View</a></td>
           </tr>

@@ -12,17 +12,38 @@
     <h1>My Profile</h1>
     <table class="detail">
       <%
-        var labels = { dob: 'Date of Birth', ssn: 'SSN', addr_line1: 'Address Line 1', patient_id: 'Patient ID', updated_at: 'Updated At' };
+        var labels = { dob: 'Date of Birth', addr_line1: 'Address Line 1', patient_id: 'Patient ID', updated_at: 'Updated At', family: 'Family', given: 'Given', name: 'Name' };
         function pretty(key) {
           if (labels[key]) return labels[key];
           return key.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
         }
+        function formatValue(key, value) {
+          if (value == null) return '';
+          if (Array.isArray(value)) {
+            if (key === 'given') return value.join(' ');
+            if (key === 'identifier') {
+              var parts = [];
+              var i;
+              for (i = 0; i < value.length; i++) {
+                if (value[i] && value[i].value) parts.push(value[i].value);
+              }
+              return parts.join(', ');
+            }
+            return value.join(', ');
+          }
+          if (typeof value === 'object') {
+            if (value.value) return value.value;
+            return '';
+          }
+          return value;
+        }
         if (patient) {
           Object.keys(patient).forEach(function (key) {
+            if (key === 'ssn') return;
       %>
       <tr>
         <th><%= pretty(key) %></th>
-        <td><%= patient[key] %></td>
+        <td><%= formatValue(key, patient[key]) %></td>
       </tr>
       <%
           });

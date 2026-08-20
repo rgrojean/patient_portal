@@ -7,12 +7,26 @@ var appFactory = require('../app');
 var fixtures = require('./fixtures/patients.json');
 
 var samplePatient = fixtures.data[0];
+
+function riverbendMrn(patient) {
+  var i;
+  for (i = 0; i < patient.identifier.length; i++) {
+    if (patient.identifier[i].system === 'urn:riverbend:mrn') {
+      return patient.identifier[i].value;
+    }
+  }
+  return null;
+}
+
+function composedName(patient) {
+  return patient.family + ', ' + patient.given.join(' ');
+}
+
 var cacheRow = {
-  patient_id: samplePatient.patientId,
-  name: samplePatient.name,
+  patient_id: riverbendMrn(samplePatient),
+  name: composedName(samplePatient),
   dob: samplePatient.dob,
   gender: samplePatient.gender,
-  ssn: samplePatient.ssn,
   phone: samplePatient.phone,
   email: samplePatient.email,
   addr_line1: samplePatient.address.line1,
@@ -127,11 +141,58 @@ describe('routes', function () {
           .expect(function (res) {
             assert.ok(res.text.indexOf('Date of Birth') !== -1);
             assert.ok(res.text.indexOf(cacheRow.dob) !== -1);
-            assert.ok(res.text.indexOf('SSN') !== -1);
-            assert.ok(res.text.indexOf(cacheRow.ssn) !== -1);
+            assert.ok(res.text.indexOf('SSN') === -1);
             assert.ok(res.text.indexOf(cacheRow.name) !== -1);
+            assert.ok(res.text.indexOf(cacheRow.patient_id) !== -1);
           })
           .end(done);
+      });
+  });
+
+  it('GET /profile and GET /admin/patients/:id do not render an SSN row', function (done) {
+    var agent = request.agent(app);
+    queryStub.onFirstCall().resolves({
+      rows: [{ username: 'swilliams', password: 'password', role: 'patient', patient_id: '200104' }]
+    });
+    queryStub.onSecondCall().resolves({ rows: [cacheRow] });
+    agent
+      .post('/login')
+      .type('form')
+      .send({ username: 'swilliams', password: 'password' })
+      .end(function (err) {
+        if (err) return done(err);
+        agent
+          .get('/profile')
+          .expect(200)
+          .expect(function (res) {
+            assert.ok(res.text.indexOf('SSN') === -1);
+            assert.ok(res.text.indexOf('ssn') === -1);
+          })
+          .end(function (err2) {
+            if (err2) return done(err2);
+            var adminAgent = request.agent(app);
+            queryStub.resetHistory();
+            queryStub.onFirstCall().resolves({
+              rows: [{ username: 'admin', password: 'admin', role: 'admin', patient_id: null }]
+            });
+            queryStub.onSecondCall().resolves({ rows: [cacheRow] });
+            queryStub.onThirdCall().resolves({ rows: [] });
+            adminAgent
+              .post('/login')
+              .type('form')
+              .send({ username: 'admin', password: 'admin' })
+              .end(function (err3) {
+                if (err3) return done(err3);
+                adminAgent
+                  .get('/admin/patients/200104')
+                  .expect(200)
+                  .expect(function (res) {
+                    assert.ok(res.text.indexOf('SSN') === -1);
+                    assert.ok(res.text.indexOf('ssn') === -1);
+                  })
+                  .end(done);
+              });
+          });
       });
   });
 
@@ -257,6 +318,33 @@ describe('routes', function () {
       });
   });
 
+  it('GET /admin/search matches a given-name token against composed family/given', function (done) {
+    var agent = request.agent(app);
+    queryStub.onFirstCall().resolves({
+      rows: [{ username: 'admin', password: 'admin', role: 'admin', patient_id: null }]
+    });
+    queryStub.onSecondCall().resolves({ rows: [cacheRow] });
+    agent
+      .post('/login')
+      .type('form')
+      .send({ username: 'admin', password: 'admin' })
+      .end(function (err) {
+        if (err) return done(err);
+        agent
+          .get('/admin/search')
+          .query({ name: 'Sarah' })
+          .expect(200)
+          .expect(function (res) {
+            var searchSql = queryStub.secondCall.args[0];
+            assert.ok(searchSql.indexOf('name ILIKE') !== -1);
+            assert.deepStrictEqual(queryStub.secondCall.args[1], ['%Sarah%']);
+            assert.ok(res.text.indexOf('Williams, Sarah') !== -1);
+            assert.ok(res.text.indexOf('/admin/patients/200104') !== -1);
+          })
+          .end(done);
+      });
+  });
+
   it('GET /admin/patients/:id renders dynamic detail and writes audit_log', function (done) {
     var agent = request.agent(app);
     queryStub.onFirstCall().resolves({
@@ -275,8 +363,8 @@ describe('routes', function () {
           .expect(200)
           .expect(function (res) {
             assert.ok(res.text.indexOf('Date of Birth') !== -1);
-            assert.ok(res.text.indexOf('SSN') !== -1);
-            assert.ok(res.text.indexOf(cacheRow.ssn) !== -1);
+            assert.ok(res.text.indexOf('SSN') === -1);
+            assert.ok(res.text.indexOf(cacheRow.name) !== -1);
             assert.ok(queryStub.thirdCall.args[0].indexOf('INSERT INTO audit_log') !== -1);
             assert.deepStrictEqual(queryStub.thirdCall.args[1], ['admin', '200104']);
           })

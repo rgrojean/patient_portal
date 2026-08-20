@@ -23,6 +23,7 @@ router.get('/search', function (req, res) {
   var params = [];
   if (name) {
     params.push('%' + name + '%');
+    // name is composed as family + ', ' + given.join(' ')
     sql += ' AND name ILIKE $' + params.length;
   }
   if (dob) {
